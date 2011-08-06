@@ -1,0 +1,14 @@
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\LogTile.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\LogTile.pdb
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\Community.CsharpSqlite.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\Community.CsharpSqlite.SQLiteClient.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\MySql.Data.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\MySql.Web.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\TerrariaServer.exe
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\TerrariaServerAPI.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\TShockAPI.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\bin\Debug\XNAHelpers.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\obj\Debug\LogTile.dll
+C:\Users\Virus\documents\visual studio 2010\Projects\LogTile\LogTile\obj\Debug\LogTile.pdb
