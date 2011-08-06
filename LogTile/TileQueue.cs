@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using Terraria;
 using TerrariaAPI;
 using TerrariaAPI.Hooks;
 using TShockAPI.Extensions;
@@ -35,7 +36,6 @@ namespace LogTile
         }
         public void addHook()
         {
-            Console.WriteLine("Tile Logger is starting up...");
             NetHooks.GetData += ParseData;
         }
 
@@ -58,8 +58,16 @@ namespace LogTile
                     byte type = data.ReadInt8();
                     int x = data.ReadInt32();
                     int y = data.ReadInt32();
-                    byte tiletype = data.ReadInt8();
-                    TileEvent evt = new TileEvent(x, y, player.Name, player.IP, ((type == 0 || type == 2 || type == 4) ? Action.BREAK : Action.PLACE ) );
+
+                    Action act = ((type == 0 || type == 2 || type == 4) ? Action.BREAK : Action.PLACE);
+                    byte tileType;
+
+                    if( act == Action.BREAK )
+                        tileType = Main.tile[x, y].type;
+                    else
+                        tileType = data.ReadInt8();
+
+                    TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType );
                     queue.Enqueue( evt );
                 }
             }
@@ -72,31 +80,35 @@ namespace LogTile
         private int y;
         private string name;
         private string ip;
-        private Action action;
-
+        private int action;
+        private byte tileType;
+   
         public TileEvent()
         {
-            createEvent( 0, 0, "", "", 0 );
+            createEvent( 0, 0, "", "", 0, 0 );
         }
 
-        public TileEvent(int x, int y, string name, string ip, Action action)
+        public TileEvent(int x, int y, string name, string ip, Action action, byte tileType)
         {
-            createEvent(x, y, name, ip, action);
+            createEvent(x, y, name, ip, action, tileType);
         }
 
-        private void createEvent(int x, int y, String name, String ip, Action a)
+        private void createEvent(int x, int y, String name, String ip, Action a, byte tileType)
         {
+            
             this.x = x;
             this.y = y;
             this.name = name;
             this.ip = ip;
-            this.action = a;
+            this.action = (a == Action.BREAK ? 1 : 0);
+            this.tileType = tileType;
         }
 
         public int GetX() { return x; }
         public int GetY() { return y; }
         public String GetName() { return name; }
         public String GetIP() { return ip; }
-        public Action GetAction() { return action; }
+        public int GetAction() { return action; }
+        public int GetTileType() { return (int)tileType; }
     }
 }

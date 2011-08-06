@@ -42,10 +42,10 @@ namespace LogTile
             {
                 TileEvent evt = queue.Dequeue();
 
-                String query = "INSERT INTO LogTile (X, Y, IP, Name, Action) VALUES (@0, @1, @2, @3, @4);";
+                String query = "INSERT INTO LogTile (X, Y, IP, Name, Action, TileType) VALUES (@0, @1, @2, @3, @4, @5);";
                 //reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
                 int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
-                database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction() == Action.BREAK ? 1 : 0);
+                database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(), evt.GetTileType() );
             }
         }
     }

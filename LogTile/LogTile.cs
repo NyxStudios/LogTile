@@ -59,7 +59,8 @@ namespace LogTile
                 new SqlColumn("Y", MySqlDbType.Int32),
                 new SqlColumn("IP", MySqlDbType.Int32),
                 new SqlColumn("Name", MySqlDbType.String),
-                new SqlColumn("Action", MySqlDbType.Int32)
+                new SqlColumn("Action", MySqlDbType.Int32),
+                new SqlColumn("TileType", MySqlDbType.Int32)
             );
             var creator = new SqlTableCreator(database, database.GetSqlType() == SqlType.Sqlite ? (IQueryBuilder)new SqliteQueryCreator() : new MysqlQueryCreator());
             creator.EnsureExists(table);
