@@ -191,7 +191,7 @@ namespace LogTile
         {
             String msg = "";
             msg += name + "(" + ip + ") ";
-            msg += (action == 1 ? "broke " : "placed ");
+            msg += (action == 2 ? "broke " : "placed ");
             msg += LogTile.helper.getItemName(tileType);
             msg += " at (" + x + ", " + y + ").";
             return msg;
