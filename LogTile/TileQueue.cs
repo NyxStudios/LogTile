@@ -14,13 +14,6 @@ using System.Threading;
 
 namespace LogTile
 {
-    public enum Action
-    {
-        ERROR = 0,
-        PLACE = 1,
-        BREAK = 2
-    };
-
     class TileQueue
     {
         private volatile Queue<TileEvent> queue;
@@ -72,43 +65,5 @@ namespace LogTile
                 }
             }
         }
-    }
-
-    public class TileEvent
-    {
-        private int x;
-        private int y;
-        private string name;
-        private string ip;
-        private int action;
-        private byte tileType;
-   
-        public TileEvent()
-        {
-            createEvent( 0, 0, "", "", 0, 0 );
-        }
-
-        public TileEvent(int x, int y, string name, string ip, Action action, byte tileType)
-        {
-            createEvent(x, y, name, ip, action, tileType);
-        }
-
-        private void createEvent(int x, int y, String name, String ip, Action a, byte tileType)
-        {
-            
-            this.x = x;
-            this.y = y;
-            this.name = name;
-            this.ip = ip;
-            this.action = (a == Action.BREAK ? 1 : 0);
-            this.tileType = tileType;
-        }
-
-        public int GetX() { return x; }
-        public int GetY() { return y; }
-        public String GetName() { return name; }
-        public String GetIP() { return ip; }
-        public int GetAction() { return action; }
-        public int GetTileType() { return (int)tileType; }
     }
 }

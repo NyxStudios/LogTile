@@ -35,6 +35,7 @@ namespace LogTile
 
         public void saveQueue()
         {
+            Console.WriteLine("LogTile queue is saving to db...");
             var database = TShockAPI.TShock.DB;
             var queue = tileQueue.GetQueue();
             long count = queue.Count;
@@ -47,6 +48,7 @@ namespace LogTile
                 int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
                 database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(), evt.GetTileType() );
             }
+            Console.WriteLine("LogTile has finished writing to db.");
         }
     }
 }

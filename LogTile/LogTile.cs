@@ -20,6 +20,8 @@ namespace LogTile
         private TileQueue queue;
         private Logger log;
         private Thread logThread;
+        public static TileHelper helper;
+        private Commands com;
 
         public override Version Version
         {
@@ -50,6 +52,8 @@ namespace LogTile
         {
             queue = new TileQueue();
             log = new Logger(queue);
+            helper = new TileHelper();
+            com = new Commands();
 
             var database = TShock.DB;
 
@@ -69,11 +73,13 @@ namespace LogTile
 
             logThread.Start();
             queue.addHook();
+            com.addHook();
         }
 
         public override void DeInitialize()
         {
             queue.closeHook();
+            com.closeHook();
             log.saveQueue();
             log.stop();
             logThread.Abort();
