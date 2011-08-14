@@ -14,10 +14,11 @@ namespace LogTile
     class Commands
     {
         private TileHelper helper;
-        public Commands()
+        private Logger log;
+        public Commands( Logger l)
         {
             this.helper = LogTile.helper;
-            Console.WriteLine( helper.getAction( 1 ).ToString() );
+            log = l;
         }
 
         public void addHook()
@@ -35,51 +36,26 @@ namespace LogTile
             TSPlayer ply = TShock.Players[buff.whoAmI];
             if (ply == null)
                 return;
-            String[] stuff = command.Split(' ');
-            if (stuff.Length > 0)
+            List<String> stuff = command.Split(' ').ToList();
+            if (stuff.Count > 0)
             {
                 if (stuff[0] == "/lt")
                 {
-                    ply.SendMessage(String.Join(", ", stuff));
-                    if( stuff.Length == 1 )
+                    //drop the first item since weve handled it
+                    stuff.RemoveAt( 0 );
+                    if( stuff.Count == 0 )
                     {
                         ply.SendMessage( "Command syntax here.");
                     }
                     else
                     {
-                        if( stuff[1].Equals("check") )
+                        while( stuff.Count > 0 )
                         {
-                            int radius = 10;
-                            if (stuff.Length > 2)
-                                int.TryParse(stuff[2], out radius);
-                            var database = TShockAPI.TShock.DB;
-                            String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 ORDER BY id DESC LIMIT 7;";
-                            var events = new List<TileEvent>();
-                            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius, ply.TileY + radius))
+                            switch( stuff[0] )
                             {
-                                while (reader.Read())
-                                {
-                                    Console.WriteLine("tet");
-                                    Console.WriteLine(helper.INTtoString(reader.Get<int>("IP")));
-                                    Console.WriteLine(helper.getAction(reader.Get<int>("Action")).ToString());
-                                    events.Add(new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
-                                                             helper.INTtoString(reader.Get<int>("IP")),
-                                                             reader.Get<string>("Name"),
-                                                             helper.getAction(reader.Get<int>("Action")),
-                                                             reader.Get<int>("TileType")));
-                                }
-                            }
-
-                            if( events.Count > 0 )
-                            {
-                                for (var index = 0; index < Math.Max(7, events.Count); index++)
-                                {
-                                    ply.SendMessage(events[index].parseEvent());
-                                }
-                            }
-                            else
-                            {
-                                ply.SendMessage( "No results found", Color.Green);
+                                case "check":
+                                    ParseCheck(ply, stuff);
+                                    break;
                             }
                         }
                     }
@@ -87,6 +63,76 @@ namespace LogTile
                 }
                 args.Handled = true;
             }
+        }
+
+        private void ParseCheck( TSPlayer ply, List<String> args )
+        {
+            // toss out the first one since its what dropped us into this.
+            args.RemoveAt(0);
+            int radius = 10;
+            long date = 600;
+            while( args.Count > 0 )
+            {
+                String[] s = args[0].Split( '=' );
+                String arg = s[0].ToLower();
+                String val = s[1];
+                switch( arg )
+                {
+                    case "area":
+                        int.TryParse(val, out radius);
+                        args.RemoveAt( 0 );
+                        break;
+                    case "since":
+                        long.TryParse(val, out date);
+                        args.RemoveAt( 0 );
+                        break;
+                    default:
+                        args.RemoveAt(0);
+                        break;
+                }
+            }
+
+            LookupTiles(ply, radius, date);
+        }
+
+        public long LookupTiles( TSPlayer ply, int radius, long time )
+        {
+            log.saveQueue();
+            var database = TShockAPI.TShock.DB;
+            String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id DESC;";
+            var events = new List<TileEvent>();
+            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius, ply.TileY + radius, (LogTile.helper.GetTime()-time)))
+            {
+                while (reader.Read())
+                {
+                    var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
+                                             helper.INTtoString(reader.Get<int>("IP")),
+                                             reader.Get<string>("Name"),
+                                             helper.getAction(reader.Get<int>("Action")),
+                                             reader.Get<int>("TileType"),
+                                             (long)reader.Get<int>("Date"));
+                    events.Add(e);
+                    Console.WriteLine(e.parseEvent());
+                    Console.WriteLine(events.Count);
+                }
+                Console.WriteLine("Final count: " + events.Count);
+            }
+            
+            if (events.Count > 0)
+            {
+                ply.SendMessage( events.Count + " results found.", Color.Green);
+                for (var i = 0; i < events.Count; i++)
+                {
+                    Console.WriteLine(events[i].parseEvent());
+                    ply.SendMessage(events[i].parseEvent());
+                }
+            }
+            else
+            {
+                ply.SendMessage("No results found.", Color.Green);
+            }
+
+            return events.Count;
         }
     }
 }

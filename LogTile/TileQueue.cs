@@ -52,16 +52,26 @@ namespace LogTile
                     int x = data.ReadInt32();
                     int y = data.ReadInt32();
 
-                    Action act = ((type == 0 || type == 2 || type == 4) ? Action.BREAK : Action.PLACE);
+                    Action act;
+                    if (type == 0 || type == 2 || type == 4)
+                        act = Action.BREAK;
+                    else if (type == 1 || type == 3)
+                        act = Action.PLACE;
+                    else
+                        act = Action.ERROR;
+
                     byte tileType;
 
-                    if( act == Action.BREAK )
+                    if (act == Action.BREAK)
                         tileType = Main.tile[x, y].type;
                     else
                         tileType = data.ReadInt8();
 
-                    TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType );
-                    queue.Enqueue( evt );
+                    if (act != Action.ERROR)
+                    {
+                        TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType, LogTile.helper.GetTime());
+                        queue.Enqueue(evt);
+                    }
                 }
             }
         }

@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace LogTile
 {
-    [APIVersion(1, 6)]
+    [APIVersion(1, 7)]
     public class LogTile : TerrariaPlugin
     {
         private TileQueue queue;
@@ -53,7 +53,7 @@ namespace LogTile
             queue = new TileQueue();
             log = new Logger(queue);
             helper = new TileHelper();
-            com = new Commands();
+            com = new Commands( log );
 
             var database = TShock.DB;
 
@@ -64,7 +64,8 @@ namespace LogTile
                 new SqlColumn("IP", MySqlDbType.Int32),
                 new SqlColumn("Name", MySqlDbType.String),
                 new SqlColumn("Action", MySqlDbType.Int32),
-                new SqlColumn("TileType", MySqlDbType.Int32)
+                new SqlColumn("TileType", MySqlDbType.Int32),
+                new SqlColumn("Date", MySqlDbType.Int32)
             );
             var creator = new SqlTableCreator(database, database.GetSqlType() == SqlType.Sqlite ? (IQueryBuilder)new SqliteQueryCreator() : new MysqlQueryCreator());
             creator.EnsureExists(table);

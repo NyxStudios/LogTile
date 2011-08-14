@@ -149,6 +149,11 @@ namespace LogTile
             }
             return 0;
         }
+
+        public long GetTime()
+        {
+            return (long)((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds / 1000);
+        }
     }
 
     public class TileEvent
@@ -159,18 +164,19 @@ namespace LogTile
         private string ip;
         private int action;
         private int tileType;
+        private long date;
 
         public TileEvent()
         {
-            createEvent(0, 0, "", "", 0, 0);
+            createEvent(0, 0, "", "", 0, 0, LogTile.helper.GetTime());
         }
 
-        public TileEvent(int x, int y, string name, string ip, Action action, int tileType)
+        public TileEvent(int x, int y, string name, string ip, Action action, int tileType, long date)
         {
-            createEvent(x, y, name, ip, action, tileType);
+            createEvent(x, y, name, ip, action, tileType, date);
         }
 
-        private void createEvent(int x, int y, String name, String ip, Action a, int tileType)
+        private void createEvent(int x, int y, String name, String ip, Action a, int tileType, long date)
         {
 
             this.x = x;
@@ -179,6 +185,7 @@ namespace LogTile
             this.ip = ip;
             this.action = LogTile.helper.getActionType(a);
             this.tileType = tileType;
+            this.date = date;
         }
 
         public int GetX() { return x; }
@@ -187,13 +194,16 @@ namespace LogTile
         public String GetIP() { return ip; }
         public int GetAction() { return action; }
         public int GetTileType() { return tileType; }
+        public long GetDate(){ return date; }
+
         public String parseEvent()
         {
             String msg = "";
             msg += name + "(" + ip + ") ";
             msg += (action == 2 ? "broke " : "placed ");
             msg += LogTile.helper.getItemName(tileType);
-            msg += " at (" + x + ", " + y + ").";
+            msg += " at (" + x + ", " + y + ") on ";
+            msg += new DateTime(1970, 1, 1).AddMilliseconds(date * 1000 ).ToString() + ".";
             return msg;
         }
     }
