@@ -152,11 +152,11 @@ namespace LogTile
 
         public long GetTime()
         {
-            return (long)((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds / 1000);
+            return (long)((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
         }
     }
 
-    public class TileEvent
+    public class TileEvent : IEquatable<TileEvent>
     {
         private int x;
         private int y;
@@ -203,8 +203,19 @@ namespace LogTile
             msg += (action == 2 ? "broke " : "placed ");
             msg += LogTile.helper.getItemName(tileType);
             msg += " at (" + x + ", " + y + ") on ";
-            msg += new DateTime(1970, 1, 1).AddMilliseconds(date * 1000 ).ToString() + ".";
+            msg += new DateTime(1970, 1, 1).AddMilliseconds(date).ToString() + ".";
             return msg;
+        }
+
+        public bool Equals(TileEvent other)
+        {
+            Console.WriteLine( this.x + ", " + other.GetX() + ": " + this.y + ", " + other.GetY());
+            if( this.x == other.GetX() && this.y == other.GetY())
+            {
+                Console.WriteLine( this.x + ", " + other.GetX() + ": " + this.y + ", " + other.GetY());
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -48,7 +48,7 @@ namespace LogTile
                 int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
                 database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(), evt.GetTileType(), evt.GetDate());
             }
-            Console.WriteLine("LogTile has finished writing to db.");
+            Console.WriteLine("LogTile has finished writing to db. " + count + " edits were saved.");
         }
     }
 }

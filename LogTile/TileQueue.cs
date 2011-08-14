@@ -71,6 +71,7 @@ namespace LogTile
                     {
                         TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType, LogTile.helper.GetTime());
                         queue.Enqueue(evt);
+                        args.Handled = true;
                     }
                 }
             }
