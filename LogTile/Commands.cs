@@ -71,6 +71,7 @@ namespace LogTile
             args.RemoveAt(0);
             int radius = 10;
             long date = 600;
+            int page = -1;
             while( args.Count > 0 )
             {
                 String[] s = args[0].Split( '=' );
@@ -86,22 +87,28 @@ namespace LogTile
                         long.TryParse(val, out date);
                         args.RemoveAt( 0 );
                         break;
+                    case "page":
+                        int.TryParse(val, out page);
+                        args.RemoveAt(0);
+                        break;
                     default:
                         args.RemoveAt(0);
                         break;
                 }
             }
 
-            LookupTiles(ply, radius, date);
+            LookupTiles(ply, radius, date, page);
         }
 
-        public long LookupTiles( TSPlayer ply, int radius, long time )
+        public long LookupTiles( TSPlayer ply, int radius, long time, int page )
         {
             log.saveQueue();
             var database = TShockAPI.TShock.DB;
             String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id DESC;";
             var events = new List<TileEvent>();
-            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius, ply.TileY + radius, (LogTile.helper.GetTime()-time)))
+            Console.WriteLine(LogTile.helper.GetTime() + ", " + time );
+            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius, 
+                ply.TileY + radius, (LogTile.helper.GetTime()-time) ) )
             {
                 while (reader.Read())
                 {
@@ -118,12 +125,19 @@ namespace LogTile
                 Console.WriteLine("Final count: " + events.Count);
             }
             
-            if (events.Count > 0)
+            if( page == -1 )
             {
-                ply.SendMessage( events.Count + " results found.", Color.Green);
-                for (var i = 0; i < events.Count; i++)
+                ply.SendMessage( "There are " + Math.Ceiling( events.Count / 7.0 ) + " pages.");
+                for (var i = 0; i < 6; i++)
                 {
-                    Console.WriteLine(events[i].parseEvent());
+                    ply.SendMessage(events[i].parseEvent());
+                }
+            }
+            else if (events.Count > 0)
+            {
+                Console.WriteLine( "Start: " + ((page-1)*7) + ", End: " + Math.Min(page*7, events.Count) );
+                for (var i = ((page-1)*7); i < Math.Min(page*7, events.Count); i++)
+                {
                     ply.SendMessage(events[i].parseEvent());
                 }
             }
