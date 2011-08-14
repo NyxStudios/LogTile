@@ -136,7 +136,7 @@ namespace LogTile
             else if (events.Count > 0)
             {
                 Console.WriteLine( "Start: " + ((page-1)*7) + ", End: " + Math.Min(page*7, events.Count) );
-                for (var i = ((page-1)*7); i < Math.Min(page*7, events.Count); i++)
+                for (var i = ((page-1)*7)-1; i < Math.Min(page*7-1, events.Count); i++)
                 {
                     ply.SendMessage(events[i].parseEvent());
                 }
