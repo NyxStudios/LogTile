@@ -152,7 +152,7 @@ namespace LogTile
 
         public long GetTime()
         {
-            return (long)((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
+            return (long)((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds / 1000 );
         }
     }
 
@@ -203,7 +203,7 @@ namespace LogTile
             msg += (action == 2 ? "broke " : "placed ");
             msg += LogTile.helper.getItemName(tileType);
             msg += " at (" + x + ", " + y + ") on ";
-            msg += new DateTime(1970, 1, 1).AddMilliseconds(date).ToString() + ".";
+            msg += new DateTime(1970, 1, 1).AddMilliseconds(date * 1000).ToString() + ".";
             return msg;
         }
 

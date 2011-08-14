@@ -216,7 +216,7 @@ namespace LogTile
                     Main.tile[evt.GetX(), evt.GetY()] = null;
 
                 Console.WriteLine( "Rolling back: " + evt.GetX() + ", " + evt.GetY() );
-                TSPlayer.All.SendTileSquare(evt.GetX(), evt.GetY(), 3);
+                TSPlayer.All.SendTileSquare(evt.GetX(), evt.GetY(), 10);
             }
             return rollback.Count;
         }
