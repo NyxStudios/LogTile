@@ -209,10 +209,8 @@ namespace LogTile
 
         public bool Equals(TileEvent other)
         {
-            Console.WriteLine( this.x + ", " + other.GetX() + ": " + this.y + ", " + other.GetY());
             if( this.x == other.GetX() && this.y == other.GetY())
             {
-                Console.WriteLine( this.x + ", " + other.GetX() + ": " + this.y + ", " + other.GetY());
                 return true;
             }
             return false;

@@ -196,7 +196,6 @@ namespace LogTile
                                              (long)reader.Get<int>("Date"));
                     events.Add(e);
                 }
-                Console.WriteLine("Final count: " + events.Count);
             }
 
             List<TileEvent> rollback = new List<TileEvent>();
@@ -215,7 +214,6 @@ namespace LogTile
                 else
                     Main.tile[evt.GetX(), evt.GetY()] = null;
 
-                Console.WriteLine( "Rolling back: " + evt.GetX() + ", " + evt.GetY() );
                 TSPlayer.All.SendTileSquare(evt.GetX(), evt.GetY(), 10);
             }
             return rollback.Count;
