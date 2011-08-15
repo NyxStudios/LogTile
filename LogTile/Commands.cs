@@ -56,9 +56,9 @@ namespace LogTile
                                 case "check":
                                     ParseCheck(ply, stuff);
                                     break;
-                                case "rollback":
+                                /*case "rollback":
                                     ParseRollback(ply, stuff);
-                                    break;
+                                    break;*/
                             }
                         }
                     }
