@@ -64,15 +64,15 @@
     <Reference Include="TerrariaServer, Version=1.0.4.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <ExecutableExtension>.exe</ExecutableExtension>
-      <HintPath>..\..\TShock\TerrariaServerBins\TerrariaServer.exe</HintPath>
+      <HintPath>DLL\TerrariaServer.exe</HintPath>
     </Reference>
     <Reference Include="TerrariaServerAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\TShock\TerrariaServerBins\TerrariaServerAPI.dll</HintPath>
+      <HintPath>DLL\TerrariaServerAPI.dll</HintPath>
     </Reference>
-    <Reference Include="TShockAPI, Version=3.2.0.805, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TShockAPI, Version=3.2.6.815, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\TShock\TShockAPI\bin\Release\ServerPlugins\TShockAPI.dll</HintPath>
+      <HintPath>DLL\TShockAPI.dll</HintPath>
     </Reference>
     <Reference Include="XNAHelpers">
       <HintPath>DLL\XNAHelpers.dll</HintPath>

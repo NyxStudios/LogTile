@@ -19,6 +19,7 @@ C:\Users\Virus\git\LogTile\LogTile\bin\Debug\Community.CsharpSqlite.SQLiteClient
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\MySql.Data.dll
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\MySql.Web.dll
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Virus\git\LogTile\LogTile\bin\Debug\TerrariaServer.exe
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\TerrariaServerAPI.dll
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\TShockAPI.dll
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\XNAHelpers.dll
