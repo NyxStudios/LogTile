@@ -50,6 +50,15 @@ namespace LogTile
 
         public override void Initialize()
         {
+            while( TShock.DB == null )
+            {
+                Thread.Sleep( 500 );
+            }
+            StartLogTile();
+        }
+
+        public void StartLogTile()
+        {
             queue = new TileQueue();
             log = new Logger(queue);
             helper = new TileHelper();

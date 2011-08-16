@@ -35,20 +35,33 @@ namespace LogTile
 
         public void saveQueue()
         {
-            Console.WriteLine("LogTile queue is saving to db...");
-            var database = TShockAPI.TShock.DB;
             var queue = tileQueue.GetQueue();
-            long count = queue.Count;
-            for (var i = 0; i < count; i++)
+            lock (queue)
             {
-                TileEvent evt = queue.Dequeue();
+                long count = queue.Count;
+                if (count > 0)
+                {
+                    Console.WriteLine("LogTile queue is saving to db...");
+                    var database = TShockAPI.TShock.DB;
 
-                String query = "INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date) VALUES (@0, @1, @2, @3, @4, @5, @6);";
-                //reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
-                int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
-                database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(), evt.GetTileType(), evt.GetDate());
+                    for (var i = 0; i < count; i++)
+                    {
+                        TileEvent evt = queue.Dequeue();
+
+                        String query =
+                            "INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date) VALUES (@0, @1, @2, @3, @4, @5, @6);";
+                        //reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
+                        int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
+                        database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(),
+                                       evt.GetTileType(), evt.GetDate());
+                    }
+                    Console.WriteLine("LogTile has finished writing to db. " + count + " edits were saved.");
+                }
+                else
+                {
+                    Console.WriteLine("Queue is empty.");
+                }
             }
-            Console.WriteLine("LogTile has finished writing to db. " + count + " edits were saved.");
         }
     }
 }

@@ -41,30 +41,35 @@ namespace LogTile
             {
                 if (stuff[0] == "/lt")
                 {
+                    args.Handled = true;
                     //drop the first item since weve handled it
                     stuff.RemoveAt( 0 );
                     if( stuff.Count == 0 )
                     {
                         ply.SendMessage( "Command syntax here.");
+                        args.Handled = true;
                     }
                     else
                     {
-                        while( stuff.Count > 0 )
+                        if( stuff.Count > 0 )
                         {
                             switch( stuff[0] )
                             {
                                 case "check":
                                     ParseCheck(ply, stuff);
                                     break;
-                                /*case "rollback":
+                                case "rollback":
                                     ParseRollback(ply, stuff);
-                                    break;*/
+                                    break;
+                                case "save":
+                                    save();
+                                    break;
                             }
                         }
                     }
 
                 }
-                args.Handled = true;
+                
             }
         }
 
@@ -75,6 +80,8 @@ namespace LogTile
             int radius = 10;
             long date = 600;
             int page = -1;
+            string name = "";
+            string ip = "";
             while (args.Count > 0)
             {
                 String[] s = args[0].Split('=');
@@ -94,18 +101,25 @@ namespace LogTile
                         int.TryParse(val, out page);
                         args.RemoveAt(0);
                         break;
+                    case "name":
+                        name = val;
+                        args.RemoveAt(0);
+                        break;
+                    case "ip":
+                        ip = val;
+                        args.RemoveAt(0);
+                        break;
                     default:
                         args.RemoveAt(0);
                         break;
                 }
             }
 
-            LookupTiles(ply, radius, date, page);
+            LookupTiles(ply, radius, date, page, name, ip);
         }
 
-        public long LookupTiles( TSPlayer ply, int radius, long time, int page )
+        public long LookupTiles( TSPlayer ply, int radius, long time, int page, string name, string ip )
         {
-            log.saveQueue();
             var database = TShockAPI.TShock.DB;
             String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id DESC;";
             var events = new List<TileEvent>();
@@ -143,7 +157,7 @@ namespace LogTile
             {
                 ply.SendMessage("No results found.", Color.Green);
             }
-
+            Console.WriteLine("Edits made: " + events.Count);
             return events.Count;
         }
 
@@ -179,7 +193,6 @@ namespace LogTile
 
         public long RollbackTiles( TSPlayer ply, int radius, long time )
         {
-            log.saveQueue();
             var database = TShockAPI.TShock.DB;
             String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id ASC;";
             var events = new List<TileEvent>();
@@ -210,13 +223,23 @@ namespace LogTile
             foreach (var evt in rollback)
             {
                 if (LogTile.helper.getAction(evt.GetAction()) == Action.BREAK)
+                {
                     Main.tile[evt.GetX(), evt.GetY()].type = (byte)evt.GetTileType();
+                    Main.tile[evt.GetX(), evt.GetY()].active = true;
+                }
                 else
-                    Main.tile[evt.GetX(), evt.GetY()] = null;
+                {
+                    Main.tile[evt.GetX(), evt.GetY()].active = false;
+                }
 
-                TSPlayer.All.SendTileSquare(evt.GetX(), evt.GetY(), 10);
+                TSPlayer.All.SendTileSquare(evt.GetX(), evt.GetY(), 1);
             }
             return rollback.Count;
+        }
+
+        public void save()
+        {
+            log.saveQueue();
         }
     }
 }
