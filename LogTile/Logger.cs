@@ -52,8 +52,9 @@ namespace LogTile
                             "INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date) VALUES (@0, @1, @2, @3, @4, @5, @6);";
                         //reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
                         int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
-                        database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(),
-                                       evt.GetTileType(), evt.GetDate());
+                        if( database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(),
+                                       evt.GetTileType(), evt.GetDate()) < 1 )
+                            queue.Enqueue( evt );
                     }
                     Console.WriteLine("LogTile has finished writing to db. " + count + " edits were saved.");
                 }

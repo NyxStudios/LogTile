@@ -40,9 +40,6 @@ namespace LogTile
         private void ParseData(GetDataEventArgs args)
         {
             PacketTypes packet = args.MsgID;
-            
-            
-
             using (var data = new MemoryStream(args.Msg.readBuffer, args.Index, args.Length))
             {        
                 if( packet == PacketTypes.Tile || packet == PacketTypes.TileKill )
@@ -51,7 +48,7 @@ namespace LogTile
                     byte type = data.ReadInt8();
                     int x = data.ReadInt32();
                     int y = data.ReadInt32();
-
+                    bool fail = data.ReadBoolean();
                     Action act;
                     if (type == 0 || type == 2 || type == 4)
                         act = Action.BREAK;
@@ -60,14 +57,18 @@ namespace LogTile
                     else
                         act = Action.ERROR;
 
-                    byte tileType;
+                    byte tileType = 0;
 
                     if (act == Action.BREAK)
+                    {
                         tileType = Main.tile[x, y].type;
-                    else
+                    }
+                    else if( act == Action.PLACE)
+                    {
                         tileType = data.ReadInt8();
+                    }
 
-                    if (act != Action.ERROR)
+                    if (act != Action.ERROR && !fail)
                     {
                         TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType, LogTile.helper.GetTime());
                         queue.Enqueue(evt);
