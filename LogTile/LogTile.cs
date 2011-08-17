@@ -50,10 +50,8 @@ namespace LogTile
 
         public override void Initialize()
         {
-            while( TShock.DB == null )
-            {
+            while( TShockAPI.TShock.DB == null )
                 Thread.Sleep( 500 );
-            }
             StartLogTile();
         }
 

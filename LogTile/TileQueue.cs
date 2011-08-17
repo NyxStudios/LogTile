@@ -39,41 +39,49 @@ namespace LogTile
 
         private void ParseData(GetDataEventArgs args)
         {
-            PacketTypes packet = args.MsgID;
-            using (var data = new MemoryStream(args.Msg.readBuffer, args.Index, args.Length))
-            {        
-                if( packet == PacketTypes.Tile || packet == PacketTypes.TileKill )
+            try
+            {
+                PacketTypes packet = args.MsgID;
+                using (var data = new MemoryStream(args.Msg.readBuffer, args.Index, args.Length))
                 {
-                    TSPlayer player = TShock.Players[args.Msg.whoAmI];
-                    byte type = data.ReadInt8();
-                    int x = data.ReadInt32();
-                    int y = data.ReadInt32();
-                    bool fail = data.ReadBoolean();
-                    Action act;
-                    if (type == 0 || type == 2 || type == 4)
-                        act = Action.BREAK;
-                    else if (type == 1 || type == 3)
-                        act = Action.PLACE;
-                    else
-                        act = Action.ERROR;
-
-                    byte tileType = 0;
-
-                    if (act == Action.BREAK)
+                    if (packet == PacketTypes.Tile || packet == PacketTypes.TileKill)
                     {
-                        tileType = Main.tile[x, y].type;
-                    }
-                    else if( act == Action.PLACE)
-                    {
-                        tileType = data.ReadInt8();
-                    }
+                        TSPlayer player = TShock.Players[args.Msg.whoAmI];
+                        byte type = data.ReadInt8();
+                        int x = data.ReadInt32();
+                        int y = data.ReadInt32();
+                        bool fail = true;
+                        Action act;
+                        if (type == 0 || type == 2 || type == 4)
+                            act = Action.BREAK;
+                        else if (type == 1 || type == 3)
+                            act = Action.PLACE;
+                        else
+                            act = Action.ERROR;
 
-                    if (act != Action.ERROR && !fail)
-                    {
-                        TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType, LogTile.helper.GetTime());
-                        queue.Enqueue(evt);
+                        byte tileType = 0;
+
+                        if (act == Action.BREAK)
+                        {
+                            tileType = Main.tile[x, y].type;
+                            fail = data.ReadBoolean();
+                        }
+                        else if (act == Action.PLACE)
+                        {
+                            tileType = data.ReadInt8();
+                            fail = false;
+                        }
+                        if (act != Action.ERROR && !fail)
+                        {
+                            TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType,
+                                                          LogTile.helper.GetTime());
+                            queue.Enqueue(evt);
+                        }
                     }
                 }
+            } catch( Exception e )
+            {
+                Console.WriteLine( e.Message);
             }
         }
     }
