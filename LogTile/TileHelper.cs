@@ -10,7 +10,10 @@ namespace LogTile
     {
         ERROR = 0,
         PLACE = 1,
-        BREAK = 2
+        BREAK = 2,
+        OPEN_CHEST = 3,
+        ROB_CHEST = 4
+
     };
 
     public class TileHelper
