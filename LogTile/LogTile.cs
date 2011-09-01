@@ -69,7 +69,7 @@ namespace LogTile
                 new SqlColumn("X", MySqlDbType.Int32),
                 new SqlColumn("Y", MySqlDbType.Int32),
                 new SqlColumn("IP", MySqlDbType.Int32),
-                new SqlColumn("Name", MySqlDbType.String),
+                new SqlColumn("Name", MySqlDbType.Text),
                 new SqlColumn("Action", MySqlDbType.Int32),
                 new SqlColumn("TileType", MySqlDbType.Int32),
                 new SqlColumn("Date", MySqlDbType.Int32)
