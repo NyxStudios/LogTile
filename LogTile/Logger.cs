@@ -36,32 +36,34 @@ namespace LogTile
         public void saveQueue()
         {
             var queue = tileQueue.GetQueue();
-            lock (queue)
+            var list = new List<TileEvent>();
+            lock( queue )
             {
-                long count = queue.Count;
-                if (count > 0)
-                {
-                    Console.WriteLine("LogTile queue is saving to db...");
-                    var database = TShockAPI.TShock.DB;
+                while( queue.Count > 0 )
+                    list.Add( queue.Dequeue() );   
+            }
+            if (list.Count > 0)
+            {
+                Console.WriteLine("LogTile queue is saving to db...");
+                var database = TShockAPI.TShock.DB;
 
-                    for (var i = 0; i < count; i++)
+                foreach (TileEvent evt in list )
+                {
+                    String query =
+                        "INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date) VALUES (@0, @1, @2, @3, @4, @5, @6);";
+                    //reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
+                    int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
+                    if( database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(),
+                                    evt.GetTileType(), evt.GetDate()) != 1 )
                     {
-                        TileEvent evt = queue.Dequeue();
-
-                        String query =
-                            "INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date) VALUES (@0, @1, @2, @3, @4, @5, @6);";
-                        //reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
-                        int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
-                        if( database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(),
-                                       evt.GetTileType(), evt.GetDate()) < 1 )
-                            queue.Enqueue( evt );
+                        Console.WriteLine( "Error, failure to save edit.\n" + evt.ToString());
                     }
-                    Console.WriteLine("LogTile has finished writing to db. " + count + " edits were saved.");
                 }
-                else
-                {
-                    Console.WriteLine("Queue is empty.");
-                }
+                Console.WriteLine("LogTile has finished writing to db. " + list.Count + " edits were saved.");
+            }
+            else
+            {
+                Console.WriteLine("Queue is empty.");
             }
         }
     }

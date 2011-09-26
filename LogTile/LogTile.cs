@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TerrariaAPI;
 using Terraria;
-using TerrariaAPI.Hooks;
+using Hooks;
 using System.IO;
 using TShockAPI;
-using XNAHelpers;
 using TShockAPI.DB;
 using MySql.Data.MySqlClient;
 using System.Threading;
 
 namespace LogTile
 {
-    [APIVersion(1, 7)]
+    [APIVersion(1, 8)]
     public class LogTile : TerrariaPlugin
     {
         private TileQueue queue;
@@ -84,13 +82,16 @@ namespace LogTile
             com.addHook();
         }
 
-        public override void DeInitialize()
+        protected override void Dispose( bool disposing )
         {
-            queue.closeHook();
-            com.closeHook();
-            log.saveQueue();
-            log.stop();
-            logThread.Abort();
+            if( disposing )
+            {
+                queue.closeHook();
+                com.closeHook();
+                log.saveQueue();
+                log.stop();
+                logThread.Abort();
+            }
         }
     }
 }

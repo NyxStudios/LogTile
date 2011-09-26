@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using Microsoft.Xna.Framework;
 using TShockAPI;
 using TShockAPI.DB;
 using Terraria;
-using TerrariaAPI.Hooks;
+using Hooks;
 
 namespace LogTile
 {
@@ -28,7 +27,7 @@ namespace LogTile
 
         public void closeHook()
         {
-            
+            ServerHooks.Chat -= handleCommand;
         }
 
         public void handleCommand(messageBuffer buff, int i, String command, HandledEventArgs args )
@@ -187,8 +186,9 @@ namespace LogTile
                         break;
                 }
             }
-
-            RollbackTiles(ply, radius, date);
+            Console.WriteLine("Starting Rollback:\nRadius:@0\nSince:@1", radius, date);
+            var rollback = RollbackTiles(ply, radius, date);
+            Console.WriteLine("Rollback Complete:\nTiles Rolled Back:@0", rollback);
         }
 
         public long RollbackTiles( TSPlayer ply, int radius, long time )
@@ -219,7 +219,7 @@ namespace LogTile
                     rollback.Add( ev );
                 }
             }
-
+            
             foreach (var evt in rollback)
             {
                 if (LogTile.helper.getAction(evt.GetAction()) == Action.BREAK)

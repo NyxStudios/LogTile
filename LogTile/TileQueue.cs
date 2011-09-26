@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Streams;
 using System.Linq;
 using System.Text;
 using System.Collections;
 using Terraria;
-using TerrariaAPI;
-using TerrariaAPI.Hooks;
+using Hooks;
 using TShockAPI.Extensions;
 using TShockAPI;
 using System.IO;
-using XNAHelpers;
 using System.Threading;
 
 namespace LogTile
@@ -48,90 +47,101 @@ namespace LogTile
                 using (var data = new MemoryStream(args.Msg.readBuffer, args.Index, args.Length))
                 {
                     TSPlayer player = TShock.Players[args.Msg.whoAmI];
-                    if (packet == PacketTypes.Tile)
+                    switch(packet)
                     {
-                        byte type = data.ReadInt8();
-                        int x = data.ReadInt32();
-                        int y = data.ReadInt32();
-                        bool fail = true;
-                        Action act;
-                        if (type == 0 || type == 2 || type == 4)
-                            act = Action.BREAK;
-                        else if (type == 1 || type == 3)
-                            act = Action.PLACE;
-                        else
-                            act = Action.ERROR;
+                        case PacketTypes.Tile:
+                        {
+                            byte type = data.ReadInt8();
+                            int x = data.ReadInt32();
+                            int y = data.ReadInt32();
+                            bool fail = true;
+                            Action act;
+                            if (type == 0 || type == 2 || type == 4)
+                                act = Action.BREAK;
+                            else if (type == 1 || type == 3)
+                                act = Action.PLACE;
+                            else
+                                act = Action.ERROR;
 
-                        byte tileType = 0;
+                            byte tileType = 0;
 
-                        if (act == Action.BREAK)
-                        {
-                            tileType = Main.tile[x, y].type;
-                            fail = data.ReadBoolean();
+                            if (act == Action.BREAK)
+                            {
+                                tileType = Main.tile[x, y].type;
+                                fail = data.ReadBoolean();
+                            }
+                            else if (act == Action.PLACE)
+                            {
+                                tileType = data.ReadInt8();
+                                fail = false;
+                            }
+                            if (act != Action.ERROR && !fail)
+                            {
+                                TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType,
+                                                              LogTile.helper.GetTime());
+                                queue.Enqueue(evt);
+                            }
+                            break;
                         }
-                        else if (act == Action.PLACE)
+                        case PacketTypes.TileKill:
                         {
-                            tileType = data.ReadInt8();
-                            fail = false;
-                        }
-                        if (act != Action.ERROR && !fail)
-                        {
-                            TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType,
+                            int x = data.ReadInt32();
+                            int y = data.ReadInt32();
+                            TileEvent evt = new TileEvent(x, y, player.Name, player.IP, Action.BREAK, 0x15,
                                                           LogTile.helper.GetTime());
                             queue.Enqueue(evt);
+                            break;
                         }
-                    }
-                    else if (packet == PacketTypes.TileKill)
-                    {
-                        int x = data.ReadInt32();
-                        int y = data.ReadInt32();
-                        TileEvent evt = new TileEvent(x, y, player.Name, player.IP, Action.BREAK, 0x15,
-                                                      LogTile.helper.GetTime());
-                        queue.Enqueue(evt);
-                    }
-                    else if( packet == PacketTypes.ChestOpen )
-                    {
-                        int chestID = data.ReadInt16();
-                        int x = data.ReadInt32();
-                        int y = data.ReadInt32();
-                        int curChest = 0;
-                        if( !chestMap.TryGetValue( player, out curChest ) )
+                        case PacketTypes.ChestOpen:
                         {
-                            chestMap.Add( player, chestID );
-                            itemMap.Add(player, Main.chest[chestID].item);
+                            int chestID = data.ReadInt16();
+                            int x = data.ReadInt32();
+                            int y = data.ReadInt32();
+                            int curChest = 0;
+                            if( !chestMap.TryGetValue( player, out curChest ) ) // chest being opened
+                            {
+                                chestMap.Add( player, chestID );
+                                itemMap.Add(player, Main.chest[chestID].item);
+                            }
+                            else // chest is being closed
+                            {
+                                chestMap.Remove(player);
+                                itemMap.Remove(player);
+                            }
+
+                            break;
                         }
-                        else
+                        case PacketTypes.ChestItem:
                         {
-                            chestMap.Remove(player);
-                            itemMap.Remove(player);
-                        }
-                    }
-                    else if (packet == PacketTypes.ChestItem)
-                    {
-                        int chestID = data.ReadInt16();
-                        byte itemSlot = data.ReadInt8();
-                        byte stack = data.ReadInt8();
-                        int curChest = 0;
-                        Console.WriteLine( chestID );
-                        if (chestMap.TryGetValue(player, out curChest) && chestID == curChest)
-                        {
+                            int chestID = data.ReadInt16();
+                            byte itemSlot = data.ReadInt8();
+                            byte stack = data.ReadInt8();
+                            int curChest = 0;
+                            int type = itemMap[ player ][itemSlot].type;
+                            Console.WriteLine( type );
                             Item[] curItems = Main.chest[chestID].item;
-                            Item[] oldItems = itemMap[ player ];
-                            Item c_it = curItems[itemSlot];
-                            Item o_it = oldItems[itemSlot];
-
-
-                            Console.WriteLine("Item: " + c_it.type + " Old: " + o_it.type);
+                            Console.WriteLine( curItems[itemSlot].type );
+                            itemMap.Remove(player);
+                            itemMap.Add( player, curItems );
+                            break;
                         }
-                        Console.WriteLine( curChest );
-
+                        case PacketTypes.ChestGetContents:
+                        {
+                            int x = data.ReadInt32();
+                            int y = data.ReadInt32();
+                            Console.WriteLine( "GETChestContents: (" +x +  ", " + y + ")");
+                            break;
+                        }
+                        case PacketTypes.SignNew:
+                        {
+                            //id = int16
+                            // x = int32
+                            // y = int32
+                            // text = string
+                            break;
+                        }
                     }
-                    else if (packet == PacketTypes.ChestGetContents)
-                    {
-                        int x = data.ReadInt32();
-                        int y = data.ReadInt32();
-                        Console.WriteLine( "GETChestContents: (" +x +  ", " + y + ")");
-                    }
+                    
                 }
             } catch( Exception e )
             {
