@@ -47,6 +47,11 @@ namespace LogTile
                 using (var data = new MemoryStream(args.Msg.readBuffer, args.Index, args.Length))
                 {
                     TSPlayer player = TShock.Players[args.Msg.whoAmI];
+                    var name = player.Name;
+                    if( player.IsLoggedIn )
+                    {
+                        name = player.UserAccountName;
+                    }
                     switch(packet)
                     {
                         case PacketTypes.Tile:
@@ -77,7 +82,7 @@ namespace LogTile
                             }
                             if (act != Action.ERROR && !fail)
                             {
-                                TileEvent evt = new TileEvent(x, y, player.Name, player.IP, act, tileType,
+                                TileEvent evt = new TileEvent(x, y, name, player.IP, act, tileType,
                                                               LogTile.helper.GetTime());
                                 queue.Enqueue(evt);
                             }
@@ -87,7 +92,7 @@ namespace LogTile
                         {
                             int x = data.ReadInt32();
                             int y = data.ReadInt32();
-                            TileEvent evt = new TileEvent(x, y, player.Name, player.IP, Action.BREAK, 0x15,
+                            TileEvent evt = new TileEvent(x, y, name, player.IP, Action.BREAK, 0x15,
                                                           LogTile.helper.GetTime());
                             queue.Enqueue(evt);
                             break;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using TShockAPI;
@@ -41,6 +42,8 @@ namespace LogTile
                 if (stuff[0] == "/lt")
                 {
                     args.Handled = true;
+                    if (!ply.Group.HasPermission("logtile"))
+                        return;
                     //drop the first item since weve handled it
                     stuff.RemoveAt( 0 );
                     if( stuff.Count == 0 )
@@ -68,7 +71,6 @@ namespace LogTile
                     }
 
                 }
-                
             }
         }
 
@@ -120,23 +122,39 @@ namespace LogTile
         public long LookupTiles( TSPlayer ply, int radius, long time, int page, string name, string ip )
         {
             var database = TShockAPI.TShock.DB;
-            String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id DESC;";
-            var events = new List<TileEvent>();
-            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius, 
-                ply.TileY + radius, (LogTile.helper.GetTime()-time) ) )
-            {
-                while (reader.Read())
-                {
-                    var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
-                                             helper.INTtoString(reader.Get<int>("IP")),
-                                             reader.Get<string>("Name"),
-                                             helper.getAction(reader.Get<int>("Action")),
-                                             reader.Get<int>("TileType"),
-                                             (long)reader.Get<int>("Date"));
-                    events.Add(e);
-                }
-            }
+
+            String query = "SELECT * FROM LogTile WHERE X BETWEEN @X1 AND @X2 AND Y BETWEEN @Y1 and @Y2 AND Date > @Date";
             
+            if (name != "")
+                query += " AND Name = @Name";
+            if (ip != "")
+                query += " AND Name = @IP";
+           
+            query += " ORDER BY id DESC;";
+
+            var events = new List<TileEvent>();
+            var reader = QueryReaderDict(database, query, new Dictionary<string, object>
+                                                        {
+                                                            {"X1", ply.TileX - radius},
+                                                            {"X2", ply.TileX + radius},
+                                                            {"Y1", ply.TileY - radius},
+                                                            {"Y2", ply.TileY + radius},
+                                                            {"Date", LogTile.helper.GetTime()-time},
+                                                            {"Name", name},
+                                                            {"IP", ip},
+                                                        });
+
+            while (reader.Read())
+            {
+                var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
+                                            helper.INTtoString(reader.Get<int>("IP")),
+                                            reader.Get<string>("Name"),
+                                            helper.getAction(reader.Get<int>("Action")),
+                                            reader.Get<int>("TileType"),
+                                            (long)reader.Get<int>("Date"));
+                events.Add(e);
+            }
+
             if( page == -1 )
             {
                 ply.SendMessage( "There are " + Math.Ceiling( events.Count / 7.0 ) + " pages. (" + events.Count + "edits)");
@@ -166,6 +184,8 @@ namespace LogTile
             args.RemoveAt(0);
             int radius = 10;
             long date = 600;
+            var name = "";
+            var ip = "";
             while (args.Count > 0)
             {
                 String[] s = args[0].Split('=');
@@ -181,34 +201,57 @@ namespace LogTile
                         long.TryParse(val, out date);
                         args.RemoveAt(0);
                         break;
+                    case "name":
+                        name = val;
+                        args.RemoveAt(0);
+                        break;
+                    case "ip":
+                        ip = val;
+                        args.RemoveAt(0);
+                        break;
                     default:
                         args.RemoveAt(0);
                         break;
                 }
             }
-            Console.WriteLine("Starting Rollback:\nRadius:@0\nSince:@1", radius, date);
-            var rollback = RollbackTiles(ply, radius, date);
-            Console.WriteLine("Rollback Complete:\nTiles Rolled Back:@0", rollback);
+            Console.WriteLine(String.Format("Starting Rollback:\nRadius:{0}\nSince:{1}", radius, date) );
+            var rollback = RollbackTiles(ply, radius, date, name, ip);
+            Console.WriteLine(String.Format("Rollback Complete:\nTiles Rolled Back:{0}", rollback) );
         }
 
-        public long RollbackTiles( TSPlayer ply, int radius, long time )
+        public long RollbackTiles( TSPlayer ply, int radius, long time, string name, string ip )
         {
             var database = TShockAPI.TShock.DB;
-            String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id ASC;";
+            String query = "SELECT * FROM LogTile WHERE X BETWEEN @X1 AND @X2 AND Y BETWEEN @Y1 and @Y2 AND Date > @Date";
+            
+            if (name != "")
+                query += " AND Name = @Name";
+            if (ip != "")
+                query += " AND Name = @IP";
+           
+            query += " ORDER BY id ASC;";
+
             var events = new List<TileEvent>();
-            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius,
-                ply.TileY + radius, (LogTile.helper.GetTime() - time)))
+            var reader = QueryReaderDict(database, query, new Dictionary<string, object>
+                                                        {
+                                                            {"X1", ply.TileX - radius},
+                                                            {"X2", ply.TileX + radius},
+                                                            {"Y1", ply.TileY - radius},
+                                                            {"Y2", ply.TileY + radius},
+                                                            {"Date", LogTile.helper.GetTime()-time},
+                                                            {"Name", name},
+                                                            {"IP", ip},
+                                                        });
+
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
-                                             helper.INTtoString(reader.Get<int>("IP")),
-                                             reader.Get<string>("Name"),
-                                             helper.getAction(reader.Get<int>("Action")),
-                                             reader.Get<int>("TileType"),
-                                             (long)reader.Get<int>("Date"));
-                    events.Add(e);
-                }
+                var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
+                                            helper.INTtoString(reader.Get<int>("IP")),
+                                            reader.Get<string>("Name"),
+                                            helper.getAction(reader.Get<int>("Action")),
+                                            reader.Get<int>("TileType"),
+                                            (long)reader.Get<int>("Date"));
+                events.Add(e);
             }
 
             List<TileEvent> rollback = new List<TileEvent>();
@@ -235,6 +278,20 @@ namespace LogTile
                 TSPlayer.All.SendTileSquare(evt.GetX(), evt.GetY(), 1);
             }
             return rollback.Count;
+        }
+
+        public QueryResult QueryReaderDict(IDbConnection olddb, string query, Dictionary<string, object> values)
+        {
+            var db = olddb.CloneEx();
+            db.Open();
+            using (var com = db.CreateCommand())
+            {
+                com.CommandText = query;
+                foreach (var kv in values)
+                    com.AddParameter("@" + kv.Key, kv.Value);
+
+                return new QueryResult(db, com.ExecuteReader());
+            }
         }
 
         public void save()
