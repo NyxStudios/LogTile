@@ -43,7 +43,10 @@ namespace LogTile
                 {
                     args.Handled = true;
                     if (!ply.Group.HasPermission("logtile"))
+                    {
+                        ply.SendMessage( "You do not have permission for that command.", Color.Red);
                         return;
+                    }
                     //drop the first item since weve handled it
                     stuff.RemoveAt( 0 );
                     if( stuff.Count == 0 )
