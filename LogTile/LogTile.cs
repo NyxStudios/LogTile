@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace LogTile
 {
-    [APIVersion(1, 8)]
+    [APIVersion(1,10)]
     public class LogTile : TerrariaPlugin
     {
         private TileQueue queue;

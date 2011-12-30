@@ -47,7 +47,6 @@ namespace LogTile
                         ply.SendMessage( "You do not have permission for that command.", Color.Red);
                         return;
                     }
-                    //drop the first item since weve handled it
                     stuff.RemoveAt( 0 );
                     if( stuff.Count == 0 )
                     {
@@ -79,7 +78,6 @@ namespace LogTile
 
         private void ParseCheck(TSPlayer ply, List<String> args)
         {
-            // toss out the first one since its what dropped us into this.
             args.RemoveAt(0);
             int radius = 10;
             long date = 600;
@@ -183,7 +181,6 @@ namespace LogTile
 
         private void ParseRollback(TSPlayer ply, List<String> args)
         {
-            // toss out the first one since its what dropped us into this.
             args.RemoveAt(0);
             int radius = 10;
             long date = 600;
