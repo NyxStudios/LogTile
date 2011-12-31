@@ -289,8 +289,6 @@ namespace LogTile
             ply.SendMessage("Rollback Complete: Tiles Rolled Back: " + rollback, Color.Green);
         }
 
-		*/
-
 		private long RollbackTiles( TSPlayer ply, LogTileArgument args )
 		{
 			return RollbackTiles(ply, args.radius, args.since);
