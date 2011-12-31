@@ -13,12 +13,13 @@ namespace LogTile
 		private volatile Queue<TileEvent> queue;
 		private Dictionary<TSPlayer, int> chestMap;
 		private Dictionary<TSPlayer, Item[]> itemMap;
-
-		public TileQueue()
+		private LogTile logTile;
+		public TileQueue(LogTile lt)
 		{
 			queue = new Queue<TileEvent>();
 			chestMap = new Dictionary<TSPlayer, int>();
 			itemMap = new Dictionary<TSPlayer, Item[]>();
+			logTile = lt;
 		}
 
 		public Queue<TileEvent> GetQueue()
@@ -120,9 +121,11 @@ namespace LogTile
 								byte stack = data.ReadInt8();
 								int curChest = 0;
 								int type = itemMap[player][itemSlot].type;
-								Console.WriteLine(type);
+								if (logTile.enableDebugOutput)
+									Console.WriteLine(type);
 								Item[] curItems = Main.chest[chestID].item;
-								Console.WriteLine(curItems[itemSlot].type);
+								if (logTile.enableDebugOutput)
+									Console.WriteLine(curItems[itemSlot].type);
 								itemMap.Remove(player);
 								itemMap.Add(player, curItems);
 								break;
@@ -131,7 +134,8 @@ namespace LogTile
 							{
 								int x = data.ReadInt32();
 								int y = data.ReadInt32();
-								Console.WriteLine("GETChestContents: (" + x + ", " + y + ")");
+								if (logTile.enableDebugOutput)
+									Console.WriteLine("GETChestContents: (" + x + ", " + y + ")");
 								break;
 							}
 						case PacketTypes.SignNew:

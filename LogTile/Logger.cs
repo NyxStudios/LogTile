@@ -11,10 +11,11 @@ namespace LogTile
 	{
 		private TileQueue tileQueue;
 		private bool isRunning = true;
-
-		public Logger(TileQueue tq)
+		private LogTile logTile;
+		public Logger(TileQueue tq, LogTile lt)
 		{
 			tileQueue = tq;
+			logTile = lt;
 		}
 
 		public void SaveTimer()
@@ -42,8 +43,9 @@ namespace LogTile
 					list.Add(queue.Dequeue());
 			}
 			if (list.Count > 0)
-			{
-				Console.WriteLine("LogTile queue is saving to db...");
+			{	
+				if (logTile.enableDebugOutput)
+					Console.WriteLine("LogTile queue is saving to db...");
 				var database = TShock.DB;
 
 				foreach (TileEvent evt in list)
@@ -58,11 +60,13 @@ namespace LogTile
 						Console.WriteLine("Error, failure to save edit.\n" + evt);
 					}
 				}
-				Console.WriteLine("LogTile has finished writing to db. " + list.Count + " edits were saved.");
+				if (logTile.enableDebugOutput)
+					Console.WriteLine("LogTile has finished writing to db. " + list.Count + " edits were saved.");
 			}
 			else
 			{
-				Console.WriteLine("Queue is empty.");
+				if (logTile.enableDebugOutput)
+					Console.WriteLine("Queue is empty.");
 			}
 		}
 	}

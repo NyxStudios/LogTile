@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TShockAPI;
 using TShockAPI.DB;
+using Terraria;
 
 namespace LogTile
 {
@@ -205,11 +206,11 @@ namespace LogTile
 			{
 				ply.SendMessage("No results found.", Color.Green);
 			}
-			Console.WriteLine("Edits made: " + events.Count);
+			ply.SendMessage("Edits made: " + events.Count, Color.Green);
 			return events.Count;
 		}
 
-		/*
+		
         private void ParseRollback(TSPlayer ply, List<String> args)
         {
             // toss out the first one since its what dropped us into this.
@@ -236,9 +237,9 @@ namespace LogTile
                         break;
                 }
             }
-            Console.WriteLine("Starting Rollback:\nRadius:@0\nSince:@1", radius, date);
+            ply.SendMessage("Starting Rollback: Radius:" + radius + " Since: " + date, Color.Green);
             var rollback = RollbackTiles(ply, radius, date);
-            Console.WriteLine("Rollback Complete:\nTiles Rolled Back:@0", rollback);
+            ply.SendMessage("Rollback Complete: Tiles Rolled Back: " + rollback, Color.Green);
         }
 
         public long RollbackTiles( TSPlayer ply, int radius, long time )
@@ -286,7 +287,6 @@ namespace LogTile
             }
             return rollback.Count;
         }
-		*/
 
 		public void save()
 		{
