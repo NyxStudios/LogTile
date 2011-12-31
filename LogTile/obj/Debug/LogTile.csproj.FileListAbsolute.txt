@@ -21,7 +21,6 @@ C:\Users\Virus\git\LogTile\LogTile\bin\Debug\MySql.Web.dll
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\TerrariaServer.exe
 C:\Users\Virus\git\LogTile\LogTile\bin\Debug\TShockAPI.dll
-C:\Users\Virus\git\LogTile\LogTile\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Virus\git\LogTile\LogTile\obj\Debug\LogTile.dll
 C:\Users\Virus\git\LogTile\LogTile\obj\Debug\LogTile.pdb
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\bin\Debug\LogTile.dll
@@ -37,3 +36,5 @@ C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\obj\Debug\L
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\obj\Debug\LogTile.dll
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\obj\Debug\LogTile.pdb
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\bin\Debug\Mono.Data.Sqlite.dll
+C:\Users\Virus\git\LogTile\LogTile\obj\Debug\LogTile.csprojResolveAssemblyReference.cache
+C:\Users\Virus\git\LogTile\LogTile\bin\Debug\Mono.Data.Sqlite.dll
