@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using TShockAPI;
 using TShockAPI.DB;
 using Terraria;
@@ -45,7 +46,8 @@ namespace LogTile
 		private void SaveQueue(CommandArgs args)
 		{
 			args.Player.SendMessage("Telling the queue to save.");
-			save();
+			Thread t = new Thread(save);
+			t.Start();
 		}
 
 		private void Lookup(CommandArgs args)
