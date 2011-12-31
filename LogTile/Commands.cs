@@ -112,9 +112,9 @@ namespace LogTile
 						break;
 				}
 			}
-			Console.WriteLine("Starting Rollback:\nRadius:{0}\nSince:{1}", argument.radius, argument.since);
+			ply.SendMessage("Starting Rollback: Radius:" + argument.radius + " Since: " + argument.since, Color.Green);
 			var rollback = RollbackTiles(ply, argument);
-			Console.WriteLine("Rollback Complete:\nTiles Rolled Back:{0}", rollback); 
+			ply.SendMessage("Rollback Complete: Tiles Rolled Back: " + rollback, Color.Green);
 			
 		}
 
