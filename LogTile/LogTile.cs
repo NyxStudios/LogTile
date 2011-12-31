@@ -18,7 +18,7 @@ namespace LogTile
 		public bool enableDebugOutput = false; //Change this to false prior to release
 		public override Version Version
 		{
-			get { return new Version("1.1"); }
+			get { return new Version("1.2"); }
 		}
 
 		public override string Name
