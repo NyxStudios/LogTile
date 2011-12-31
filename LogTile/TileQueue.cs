@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Streams;
 using Hooks;
-using Terraria;
 using TShockAPI;
+using Terraria;
 
 namespace LogTile
 {

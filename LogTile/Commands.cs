@@ -1,42 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using TShockAPI;
 using TShockAPI.DB;
-using Terraria;
-using Hooks;
 
 namespace LogTile
 {
-    class Commands
-    {
-        private TileHelper helper;
-        private Logger log;
-        public Commands( Logger l)
-        {
-            this.helper = LogTile.helper;
-            log = l;
-        }
+	internal class Commands
+	{
+		private TileHelper helper;
+		private Logger log;
 
-        public void addHook()
-        {
-            //ServerHooks.Chat += handleCommand;
+		public Commands(Logger l)
+		{
+			this.helper = LogTile.helper;
+			log = l;
+		}
+
+		public void addHook()
+		{
+			//ServerHooks.Chat += handleCommand;
 			TShockAPI.Commands.ChatCommands.Add(new Command("lookup", Lookup, "lookup"));
-        }
+		}
 
-        public void closeHook()
-        {
-            //ServerHooks.Chat -= handleCommand;
-        }
+		public void closeHook()
+		{
+			//ServerHooks.Chat -= handleCommand;
+		}
 
-		private void Lookup( CommandArgs args )
+		private void Lookup(CommandArgs args)
 		{
 			TSPlayer ply = args.Player;
-			var param  = args.Parameters;
+			var param = args.Parameters;
 			LogTileArgument argument = new LogTileArgument();
-			foreach( string keyval in param)
+			foreach (string keyval in param)
 			{
 				string[] pair = keyval.Split('=');
 				if (pair.Length < 2)
@@ -44,12 +40,12 @@ namespace LogTile
 				string key = pair[0];
 				string val = pair[1];
 
-				switch( key )
+				switch (key)
 				{
 					case "area":
 						int radius;
 						int.TryParse(val, out radius);
-						argument.SetRadius( radius );
+						argument.SetRadius(radius);
 						break;
 					case "since":
 						int time;
@@ -59,7 +55,7 @@ namespace LogTile
 					case "page":
 						int page;
 						int.TryParse(val, out page);
-						argument.SetPage( page );
+						argument.SetPage(page);
 						break;
 					case "name":
 						argument.SetPlayer(val);
@@ -163,52 +159,56 @@ namespace LogTile
             LookupTiles(ply, radius, date, page, name, ip);
         }
 		*/
-		private long LookupTiles( TSPlayer ply, LogTileArgument arg )
+
+		private long LookupTiles(TSPlayer ply, LogTileArgument arg)
 		{
 			return LookupTiles(ply, arg.radius, arg.since, arg.page, arg.player, arg.ip);
 		}
-		public long LookupTiles( TSPlayer ply, int radius, long time, int page, string name, string ip )
-        {
-            var database = TShockAPI.TShock.DB;
-            String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id DESC;";
-            var events = new List<TileEvent>();
-            using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius, 
-                ply.TileY + radius, (LogTile.helper.GetTime()-time) ) )
-            {
-                while (reader.Read())
-                {
-                    var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
-                                             helper.INTtoString(reader.Get<int>("IP")),
-                                             reader.Get<string>("Name"),
-                                             helper.getAction(reader.Get<int>("Action")),
-                                             reader.Get<int>("TileType"),
-                                             (long)reader.Get<int>("Date"));
-                    events.Add(e);
-                }
-            }
-            
-            if( page == -1 )
-            {
-                ply.SendMessage( "There are " + Math.Ceiling( events.Count / 7.0 ) + " pages. (" + events.Count + "edits)");
-                for (var i = 0; i < 6; i++)
-                {
-                    ply.SendMessage(events[i].parseEvent());
-                }
-            }
-            else if (events.Count > 0)
-            {
-                for (var i = ((page-1)*7)-1; i < Math.Min(page*7-1, events.Count); i++)
-                {
-                    ply.SendMessage(events[i].parseEvent());
-                }
-            }
-            else
-            {
-                ply.SendMessage("No results found.", Color.Green);
-            }
-            Console.WriteLine("Edits made: " + events.Count);
-            return events.Count;
-        }
+
+		public long LookupTiles(TSPlayer ply, int radius, long time, int page, string name, string ip)
+		{
+			var database = TShock.DB;
+			String query =
+				"SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id DESC;";
+			var events = new List<TileEvent>();
+			using (var reader = database.QueryReader(query, ply.TileX - radius, ply.TileX + radius, ply.TileY - radius,
+			                                         ply.TileY + radius, (LogTile.helper.GetTime() - time)))
+			{
+				while (reader.Read())
+				{
+					var e = new TileEvent(reader.Get<int>("X"), reader.Get<int>("Y"),
+					                      helper.INTtoString(reader.Get<int>("IP")),
+					                      reader.Get<string>("Name"),
+					                      helper.getAction(reader.Get<int>("Action")),
+					                      reader.Get<int>("TileType"),
+					                      reader.Get<int>("Date"));
+					events.Add(e);
+				}
+			}
+
+			if (page == -1)
+			{
+				ply.SendMessage("There are " + Math.Ceiling(events.Count/7.0) + " pages. (" + events.Count + "edits)");
+				for (var i = 0; i < 6; i++)
+				{
+					ply.SendMessage(events[i].parseEvent());
+				}
+			}
+			else if (events.Count > 0)
+			{
+				for (var i = ((page - 1)*7) - 1; i < Math.Min(page*7 - 1, events.Count); i++)
+				{
+					ply.SendMessage(events[i].parseEvent());
+				}
+			}
+			else
+			{
+				ply.SendMessage("No results found.", Color.Green);
+			}
+			Console.WriteLine("Edits made: " + events.Count);
+			return events.Count;
+		}
+
 		/*
         private void ParseRollback(TSPlayer ply, List<String> args)
         {
@@ -287,10 +287,11 @@ namespace LogTile
             return rollback.Count;
         }
 		*/
-        public void save()
-        {
-            log.saveQueue();
-        }
+
+		public void save()
+		{
+			log.saveQueue();
+		}
 
 		private class LogTileArgument
 		{
@@ -309,7 +310,7 @@ namespace LogTile
 				ip = "";
 			}
 
-			public void SetRadius( int r )
+			public void SetRadius(int r)
 			{
 				radius = r;
 			}
@@ -334,5 +335,5 @@ namespace LogTile
 				ip = i;
 			}
 		}
-    }
+	}
 }
