@@ -20,14 +20,26 @@ namespace LogTile
 		public void addHook()
 		{
 			//ServerHooks.Chat += handleCommand;
-			TShockAPI.Commands.ChatCommands.Add(new Command("lookup", Lookup, "lookup"));
-			TShockAPI.Commands.ChatCommands.Add(new Command("rollback", Rollback, "rollback"));
-			TShockAPI.Commands.ChatCommands.Add(new Command("savequeue", SaveQueue, "savequeue"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("lt.lookup", Lookup, "lookup"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("lt.rollback", Rollback, "rollback"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("lt.savequeue", SaveQueue, "savequeue"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("lt", Help, "lt"));
 		}
 
 		public void closeHook()
 		{
 			//ServerHooks.Chat -= handleCommand;
+		}
+
+		private void Help(CommandArgs args)
+		{
+			TSPlayer ply = args.Player;
+			ply.SendMessage("LogTile Alpha Commands:", Color.Yellow);
+			ply.SendMessage("/lookup area=x since=y page=z name=a ip=b", Color.Gold);
+			ply.SendMessage("Looks up the changes in a certain area.", Color.Green);
+			ply.SendMessage("/rollback area=x since=y page=z name=a ip=b", Color.Gold);
+			ply.SendMessage("Rolls back an area to a previous state.", Color.Green);
+			ply.SendMessage("/savequeue - Saves the queue.", Color.Gold);
 		}
 
 		private void SaveQueue(CommandArgs args)
