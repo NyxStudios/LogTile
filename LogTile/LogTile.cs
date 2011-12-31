@@ -15,7 +15,7 @@ namespace LogTile
 		private Thread logThread;
 		public static TileHelper helper;
 		private Commands com;
-
+		public bool enableDebugOutput = true; //Change this to false prior to release
 		public override Version Version
 		{
 			get { return new Version("1.1"); }
@@ -50,8 +50,8 @@ namespace LogTile
 
 		public void StartLogTile()
 		{
-			queue = new TileQueue();
-			log = new Logger(queue);
+			queue = new TileQueue(this);
+			log = new Logger(queue, this);
 			helper = new TileHelper();
 			com = new Commands(log);
 
