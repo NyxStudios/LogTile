@@ -102,6 +102,7 @@ namespace LogTile
 				log.saveQueue();
 				log.stop();
 				logThread.Abort();
+				com.saveThread.Abort();
 			}
 		}
 	}

@@ -11,7 +11,7 @@ namespace LogTile
 	{
 		private TileHelper helper;
 		private Logger log;
-
+		public Thread saveThread;
 		public Commands(Logger l)
 		{
 			this.helper = LogTile.helper;
@@ -46,8 +46,8 @@ namespace LogTile
 		private void SaveQueue(CommandArgs args)
 		{
 			args.Player.SendMessage("Telling the queue to save.");
-			Thread t = new Thread(save);
-			t.Start();
+			saveThread = new Thread(save);
+			saveThread.Start();
 		}
 
 		private void Lookup(CommandArgs args)
