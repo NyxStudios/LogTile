@@ -121,10 +121,10 @@ namespace LogTile
 								byte stack = data.ReadInt8();
 								int curChest = 0;
 								int type = itemMap[player][itemSlot].type;
-								if (logTile.enableDebugOutput)
+								if (LogTile.enableDebugOutput)
 									Console.WriteLine(type);
 								Item[] curItems = Main.chest[chestID].item;
-								if (logTile.enableDebugOutput)
+								if (LogTile.enableDebugOutput)
 									Console.WriteLine(curItems[itemSlot].type);
 								itemMap.Remove(player);
 								itemMap.Add(player, curItems);
@@ -134,7 +134,7 @@ namespace LogTile
 							{
 								int x = data.ReadInt32();
 								int y = data.ReadInt32();
-								if (logTile.enableDebugOutput)
+								if (LogTile.enableDebugOutput)
 									Console.WriteLine("GETChestContents: (" + x + ", " + y + ")");
 								break;
 							}
