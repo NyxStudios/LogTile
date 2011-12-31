@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TShockAPI;
 using TShockAPI.DB;
+using Terraria;
 
 namespace LogTile
 {
@@ -20,6 +21,7 @@ namespace LogTile
 		{
 			//ServerHooks.Chat += handleCommand;
 			TShockAPI.Commands.ChatCommands.Add(new Command("lookup", Lookup, "lookup"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("rollback", Rollback, "rollback"));
 		}
 
 		public void closeHook()
@@ -68,6 +70,52 @@ namespace LogTile
 				}
 			}
 			LookupTiles(ply, argument);
+		}
+
+		private void Rollback(CommandArgs args)
+		{
+			TSPlayer ply = args.Player;
+			var param = args.Parameters;
+			LogTileArgument argument = new LogTileArgument();
+			foreach (string keyval in param)
+			{
+				string[] pair = keyval.Split('=');
+				if (pair.Length < 2)
+					continue;
+				string key = pair[0];
+				string val = pair[1];
+
+				switch (key)
+				{
+					case "area":
+						int radius;
+						int.TryParse(val, out radius);
+						argument.SetRadius(radius);
+						break;
+					case "since":
+						int time;
+						int.TryParse(val, out time);
+						argument.SetSince(time);
+						break;
+					case "page":
+						int page;
+						int.TryParse(val, out page);
+						argument.SetPage(page);
+						break;
+					case "name":
+						argument.SetPlayer(val);
+						break;
+					case "ip":
+						argument.SetIP(val);
+						break;
+					default:
+						break;
+				}
+			}
+			Console.WriteLine("Starting Rollback:\nRadius:{0}\nSince:{1}", argument.radius, argument.since);
+			var rollback = RollbackTiles(ply, argument);
+			Console.WriteLine("Rollback Complete:\nTiles Rolled Back:{0}", rollback); 
+			
 		}
 
 		/*
@@ -186,10 +234,10 @@ namespace LogTile
 				}
 			}
 
-			if (page == -1)
+			if (page <= 0)
 			{
 				ply.SendMessage("There are " + Math.Ceiling(events.Count/7.0) + " pages. (" + events.Count + "edits)");
-				for (var i = 0; i < 6; i++)
+				for (var i = 0; i < Math.Min(6, events.Count); i++)
 				{
 					ply.SendMessage(events[i].parseEvent());
 				}
@@ -241,7 +289,14 @@ namespace LogTile
             Console.WriteLine("Rollback Complete:\nTiles Rolled Back:@0", rollback);
         }
 
-        public long RollbackTiles( TSPlayer ply, int radius, long time )
+		*/
+
+		private long RollbackTiles( TSPlayer ply, LogTileArgument args )
+		{
+			return RollbackTiles(ply, args.radius, args.since);
+		}
+
+        private long RollbackTiles( TSPlayer ply, int radius, long time )
         {
             var database = TShockAPI.TShock.DB;
             String query = "SELECT * FROM LogTile WHERE X BETWEEN @0 AND @1 AND Y BETWEEN @2 and @3 AND Date > @4 ORDER BY id ASC;";
@@ -286,7 +341,7 @@ namespace LogTile
             }
             return rollback.Count;
         }
-		*/
+		/**/
 
 		public void save()
 		{
@@ -305,7 +360,7 @@ namespace LogTile
 			{
 				radius = 10;
 				since = 600;
-				page = 1;
+				page = 0;
 				player = "";
 				ip = "";
 			}
