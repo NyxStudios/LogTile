@@ -22,11 +22,18 @@ namespace LogTile
 			//ServerHooks.Chat += handleCommand;
 			TShockAPI.Commands.ChatCommands.Add(new Command("lookup", Lookup, "lookup"));
 			TShockAPI.Commands.ChatCommands.Add(new Command("rollback", Rollback, "rollback"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("savequeue", SaveQueue, "savequeue"));
 		}
 
 		public void closeHook()
 		{
 			//ServerHooks.Chat -= handleCommand;
+		}
+
+		private void SaveQueue(CommandArgs args)
+		{
+			args.Player.SendMessage("Telling the queue to save.");
+			save();
 		}
 
 		private void Lookup(CommandArgs args)
