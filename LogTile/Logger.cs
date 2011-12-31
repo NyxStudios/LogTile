@@ -10,7 +10,7 @@ namespace LogTile
 	internal class Logger
 	{
 		private TileQueue tileQueue;
-		private bool isRunning = false;
+		private bool isRunning = true;
 		private LogTile logTile;
 		public Logger(TileQueue tq, LogTile lt)
 		{
