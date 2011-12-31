@@ -36,3 +36,4 @@ C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\bin\Debug\T
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\obj\Debug\LogTile.csprojResolveAssemblyReference.cache
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\obj\Debug\LogTile.dll
 C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\obj\Debug\LogTile.pdb
+C:\Users\Shank\Dropbox\Design and Development\CSharp\LogTile\LogTile\bin\Debug\Mono.Data.Sqlite.dll
