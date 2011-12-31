@@ -16,6 +16,7 @@ namespace LogTile
 		public static TileHelper helper;
 		private Commands com;
 		public bool enableDebugOutput = false;
+		private Thread fileWriter;
 		public override Version Version
 		{
 			get { return new Version("1.2"); }
@@ -78,12 +79,23 @@ namespace LogTile
 			logThread.Start();
 			queue.addHook();
 			com.addHook();
+
+			fileWriter = new Thread(ConfigFileManager);
+			fileWriter.Start();
+		}
+
+		protected void ConfigFileManager()
+		{
+			ConfigFile cfg = new ConfigFile(this);
+			cfg.WriteConfigFile();
+			cfg.ReadConfigFile();
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
+				fileWriter.Abort();
 				queue.closeHook();
 				com.closeHook();
 				log.saveQueue();
