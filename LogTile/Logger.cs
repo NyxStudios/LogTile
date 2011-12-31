@@ -60,8 +60,7 @@ namespace LogTile
 						Console.WriteLine("Error, failure to save edit.\n" + evt);
 					}
 				}
-				if (logTile.enableDebugOutput)
-					Console.WriteLine("LogTile has finished writing to db. " + list.Count + " edits were saved.");
+				Console.WriteLine("LogTile has written " + list.Count + " edits to the database.");
 			}
 			else
 			{
