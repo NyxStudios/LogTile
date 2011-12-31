@@ -89,6 +89,7 @@ namespace LogTile
 			ConfigFile cfg = new ConfigFile(this);
 			cfg.WriteConfigFile();
 			cfg.ReadConfigFile();
+			enableDebugOutput = Configuration.enableDebugOutput;
 		}
 
 		protected override void Dispose(bool disposing)

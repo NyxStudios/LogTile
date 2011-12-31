@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using TShockAPI;
 
 namespace LogTile
@@ -10,6 +11,8 @@ namespace LogTile
 	class ConfigFile
 	{
 		private LogTile logTile = null;
+		private string savePath = Path.Combine(TShock.SavePath, "logtile.cfg");
+		private ActualConfigFile configFile = null;
 		public ConfigFile(LogTile lt)
 		{
 			logTile = lt;
@@ -17,35 +20,37 @@ namespace LogTile
 
 		public void ReadConfigFile()
 		{
-			string configFile = "";
-			TextReader tr = new StreamReader(Path.Combine(TShock.SavePath, "logtile.cfg"));
-			configFile = tr.ReadToEnd();
-			string[] config = configFile.Split(' ');
-			foreach (string c in config)
-			{
-				if (c.Contains("debug="))
-				{
-					string cC = c.Remove(6);
-					if (cC == "false")
-					{
-						logTile.enableDebugOutput = false;
-					} else
-					{
-						logTile.enableDebugOutput = true;
-					}
-				}
-			}
+			TextReader tr = new StreamReader(savePath);
+			string config = tr.ReadToEnd();
+			tr.Close();			
+			configFile = JsonConvert.DeserializeObject<ActualConfigFile>(config);
+			Configuration.defaultRadius = configFile.defaultRadius;
+			Configuration.defaultTimeframe = configFile.defaultTimeframe;
+			Configuration.enableDebugOutput = configFile.enableDebugOutput;
 		}
 
 		public void WriteConfigFile()
 		{
-			if (!File.Exists(Path.Combine(TShock.SavePath, "logtile.cfg")))
+			if (!File.Exists(savePath))
 			{
-				TShockAPI.FileTools.CreateFile(Path.Combine(TShock.SavePath, "logtile.cfg"));
-				TextWriter tw = new StreamWriter(Path.Combine(TShock.SavePath, "logtile.cfg"));
-				tw.WriteLine("debug=false");
+				TextWriter tw = new StreamWriter(savePath);
+				tw.Write(JsonConvert.SerializeObject(new ActualConfigFile()));
 				tw.Close();
 			}
 		}
+	}
+
+	public static class Configuration
+	{
+		public static int defaultRadius = 10;
+		public static int defaultTimeframe = 600;
+		public static bool enableDebugOutput = false;
+	}
+
+	class ActualConfigFile
+	{
+		public int defaultRadius = 10;
+		public int defaultTimeframe = 600;
+		public bool enableDebugOutput = false;
 	}
 }

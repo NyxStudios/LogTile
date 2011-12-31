@@ -281,8 +281,8 @@ namespace LogTile
         {
             // toss out the first one since its what dropped us into this.
             args.RemoveAt(0);
-            int radius = 10;
-            long date = 600;
+            int radius = Configuration.defaultRadius;
+            long date = Configuration.defaultTimeframe;
             while (args.Count > 0)
             {
                 String[] s = args[0].Split('=');
@@ -375,8 +375,8 @@ namespace LogTile
 
 			public LogTileArgument()
 			{
-				radius = 10;
-				since = 600;
+				radius = Configuration.defaultRadius;
+				since = Configuration.defaultTimeframe;
 				page = 0;
 				player = "";
 				ip = "";
