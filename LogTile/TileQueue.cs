@@ -8,7 +8,7 @@ using Terraria;
 
 namespace LogTile
 {
-	internal class TileQueue
+	public class TileQueue
 	{
 		private volatile Queue<TileEvent> queue;
 		private Dictionary<TSPlayer, int> chestMap;

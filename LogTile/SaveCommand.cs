@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using Newtonsoft.Json;
 using TShockAPI;
 using TShockAPI.DB;
 
@@ -33,8 +34,16 @@ namespace LogTile
 				while (queue.Count > 0)
 					list.Add(queue.Dequeue());
 			}
+
 			if (list.Count > 0)
-			{	
+			{
+				string test = JsonConvert.SerializeObject(list);
+				String jsonInsert =
+							"INSERT INTO LogTile2 (Start, End, Data) VALUES (@0, @1, @2);";
+				//reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
+				if (LogTile.DB.Query(jsonInsert, list[0].GetDate(), list[list.Count - 1].GetDate(), test) != 1)
+					Console.WriteLine("Error: Could not insert json blob");
+
 				if (LogTile.enableDebugOutput)
 					Console.WriteLine("LogTile queue is saving to db...");
 				var database = LogTile.DB;

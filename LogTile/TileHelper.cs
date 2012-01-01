@@ -159,13 +159,13 @@ namespace LogTile
 
 	public class TileEvent : IEquatable<TileEvent>
 	{
-		private int x;
-		private int y;
-		private string name;
-		private string ip;
-		private int action;
-		private int tileType;
-		private long date;
+		public int x;
+		public int y;
+		public string name;
+		public string ip;
+		public int action;
+		public int tileType;
+		public long date;
 
 		public TileEvent()
 		{
@@ -183,7 +183,10 @@ namespace LogTile
 			this.y = y;
 			this.name = name;
 			this.ip = ip;
-			this.action = LogTile.helper.getActionType(a);
+			if (LogTile.helper != null)
+				this.action = LogTile.helper.getActionType(a);
+			else
+				this.action = 1;
 			this.tileType = tileType;
 			this.date = date;
 		}

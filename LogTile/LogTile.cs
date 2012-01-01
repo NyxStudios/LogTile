@@ -108,6 +108,17 @@ namespace LogTile
 			                                  	: new MysqlQueryCreator());
 			creator.EnsureExists(table);
 
+			var table2 = new SqlTable("LogTile2",
+									 new SqlColumn("Start", MySqlDbType.Int32),
+									 new SqlColumn("End", MySqlDbType.Int32),
+									 new SqlColumn("Data", MySqlDbType.Text)
+				);
+			var creator2 = new SqlTableCreator(DB,
+											  DB.GetSqlType() == SqlType.Sqlite
+												? (IQueryBuilder)new SqliteQueryCreator()
+												: new MysqlQueryCreator());
+			creator2.EnsureExists(table2);
+
 			logThread = new Thread(log.SaveTimer);
 			CommandQueueThread = new Thread( CommandQueue.ProcessQueue);
 
