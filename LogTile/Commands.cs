@@ -64,6 +64,7 @@ namespace LogTile
 				switch (key)
 				{
 					case "area":
+					case "radius":
 						int radius;
 						int.TryParse(val, out radius);
 						argument.SetRadius(radius);
@@ -79,6 +80,7 @@ namespace LogTile
 						argument.SetPage(page);
 						break;
 					case "name":
+					case "player":
 						argument.SetPlayer(val);
 						break;
 					case "ip":
@@ -107,6 +109,7 @@ namespace LogTile
 				switch (key)
 				{
 					case "area":
+					case "radius":
 						int radius;
 						int.TryParse(val, out radius);
 						argument.SetRadius(radius);
@@ -122,6 +125,7 @@ namespace LogTile
 						argument.SetPage(page);
 						break;
 					case "name":
+					case "player":
 						argument.SetPlayer(val);
 						break;
 					case "ip":
