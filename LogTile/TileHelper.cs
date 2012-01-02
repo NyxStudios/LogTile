@@ -166,18 +166,19 @@ namespace LogTile
 		public int action;
 		public int tileType;
 		public long date;
+		public int frameNumber;
 
 		public TileEvent()
 		{
-			createEvent(0, 0, "", "", 0, 0, LogTile.helper.GetTime());
+			createEvent(0, 0, "", "", 0, 0, LogTile.helper.GetTime(), 0);
 		}
 
-		public TileEvent(int x, int y, string name, string ip, Action action, int tileType, long date)
+		public TileEvent(int x, int y, string name, string ip, Action action, int tileType, long date, int frame)
 		{
-			createEvent(x, y, name, ip, action, tileType, date);
+			createEvent(x, y, name, ip, action, tileType, date, frame);
 		}
 
-		private void createEvent(int x, int y, String name, String ip, Action a, int tileType, long date)
+		private void createEvent(int x, int y, String name, String ip, Action a, int tileType, long date, int frame)
 		{
 			this.x = x;
 			this.y = y;
@@ -189,6 +190,7 @@ namespace LogTile
 				this.action = 1;
 			this.tileType = tileType;
 			this.date = date;
+			this.frameNumber = frame;
 		}
 
 		public int GetX()

@@ -37,7 +37,27 @@ namespace LogTile
 
 			if (list.Count > 0)
 			{
-				string test = JsonConvert.SerializeObject(list);
+				var temp = seperateEventsByUser(list);
+				var database = LogTile.DB;
+				foreach( KeyValuePair<String, List<TileEvent>> pair in temp)
+				{
+					var tempList = pair.Value;
+					var tempSerial = JsonConvert.SerializeObject(tempList);
+					string ip = tempList[0].ip;
+					string name = tempList[0].name;
+
+					String tempInsert =
+							"INSERT INTO LogTile2 (Name, IP, Start, End, Data) VALUES (@0, @1, @2, @3, @4);";
+					//reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
+					if (LogTile.DB.Query(tempInsert, name, ip, tempList[0].GetDate(), tempList[tempList.Count - 1].GetDate(), tempSerial) != 1)
+						Console.WriteLine("Error: Could not insert json blob");
+
+					if (LogTile.enableDebugOutput)
+						Console.WriteLine("LogTile queue is saving to db...");
+					
+
+				}
+				/*string test = JsonConvert.SerializeObject(list);
 				String jsonInsert =
 							"INSERT INTO LogTile2 (Start, End, Data) VALUES (@0, @1, @2);";
 				//reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
@@ -46,16 +66,16 @@ namespace LogTile
 
 				if (LogTile.enableDebugOutput)
 					Console.WriteLine("LogTile queue is saving to db...");
-				var database = LogTile.DB;
+				var database = LogTile.DB;*/
 
 				foreach (TileEvent evt in list)
 				{
 					String query =
-						"INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date) VALUES (@0, @1, @2, @3, @4, @5, @6);";
+						"INSERT INTO LogTile (X, Y, IP, Name, Action, TileType, Date, Frame) VALUES (@0, @1, @2, @3, @4, @5, @6, @7);";
 					//reverse method for later String ipAddress = new IPAddress(BitConverter.GetBytes(intAddress)).ToString();
 					int intAddress = BitConverter.ToInt32(IPAddress.Parse(evt.GetIP()).GetAddressBytes(), 0);
 					if (database.Query(query, evt.GetX(), evt.GetY(), intAddress, evt.GetName(), evt.GetAction(),
-					                   evt.GetTileType(), evt.GetDate()) != 1)
+					                   evt.GetTileType(), evt.GetDate(), evt.frameNumber) != 1)
 					{
 						Console.WriteLine("Error, failure to save edit.\n" + evt);
 					}
@@ -74,5 +94,32 @@ namespace LogTile
 			else
 				ply.SendMessage("Queue finished saving..");
 		}
+
+		private Dictionary<string, List<TileEvent>> seperateEventsByUser(List<TileEvent> evts)
+		{
+			Dictionary<string, List<TileEvent>> ipEvents = new Dictionary<string, List<TileEvent>>();
+
+			foreach( TileEvent e in evts )
+			{
+				string ip = e.ip;
+
+				List<TileEvent> tempList;
+
+				if (ipEvents.ContainsKey(ip))
+				{
+					tempList = ipEvents[ip];
+				}
+				else
+				{
+					tempList = new List<TileEvent>();
+					ipEvents.Add( ip, tempList );
+				}
+
+				tempList.Add(e);
+			}
+
+			return ipEvents;
+		}
+
 	}
 }

@@ -50,7 +50,8 @@ namespace LogTile
 											reader.Get<string>("Name"),
 											LogTile.helper.getAction(reader.Get<int>("Action")),
 											reader.Get<int>("TileType"),
-											(long)reader.Get<int>("Date"));
+											(long)reader.Get<int>("Date"),
+											reader.Get<int>("Frame"));
 				events.Add(e);
 			}
 

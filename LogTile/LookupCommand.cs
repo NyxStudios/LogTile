@@ -40,7 +40,7 @@ namespace LogTile
                                                             {"Date", LogTile.helper.GetTime()-args.since},
                                                             {"Name", args.player},
                                                             {"IP", args.ip},
-                                                        });
+														});
 	
 			while (reader.Read())
 			{
@@ -49,7 +49,8 @@ namespace LogTile
 										reader.Get<string>("Name"),
 										LogTile.helper.getAction(reader.Get<int>("Action")),
 										reader.Get<int>("TileType"),
-										reader.Get<int>("Date"));
+										reader.Get<int>("Date"),
+										reader.Get<int>("Frame"));
 				events.Add(e);
 			}
 

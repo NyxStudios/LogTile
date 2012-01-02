@@ -100,7 +100,8 @@ namespace LogTile
 			                         new SqlColumn("Name", MySqlDbType.Text),
 			                         new SqlColumn("Action", MySqlDbType.Int32),
 			                         new SqlColumn("TileType", MySqlDbType.Int32),
-			                         new SqlColumn("Date", MySqlDbType.Int32)
+			                         new SqlColumn("Date", MySqlDbType.Int32),
+									 new SqlColumn("Frame", MySqlDbType.Int32){ DefaultValue = "0" }
 				);
 			var creator = new SqlTableCreator(DB,
 											  DB.GetSqlType() == SqlType.Sqlite
@@ -109,6 +110,8 @@ namespace LogTile
 			creator.EnsureExists(table);
 
 			var table2 = new SqlTable("LogTile2",
+									 new SqlColumn("Name", MySqlDbType.VarChar, 32),
+									 new SqlColumn("IP", MySqlDbType.VarChar, 16),
 									 new SqlColumn("Start", MySqlDbType.Int32),
 									 new SqlColumn("End", MySqlDbType.Int32),
 									 new SqlColumn("Data", MySqlDbType.Text)
@@ -124,7 +127,6 @@ namespace LogTile
 
 			logThread.Start();
 			CommandQueueThread.Start();
-
 			queue.addHook();
 			com.addHook();
 
